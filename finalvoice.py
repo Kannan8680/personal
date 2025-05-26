@@ -1,21 +1,16 @@
 import speech_recognition as sr
 import pyttsx3
 
-# List to store tasks
 tasks = []
-
-# Initialize speech recognizer and text-to-speech engine
 recognizer = sr.Recognizer()
 engine = pyttsx3.init()
 
 def add_task(task):
-    """Adds a task and confirms it via speech."""
     tasks.append(task)
     engine.say(f"Task {task} added")
     engine.runAndWait()
 
 def view_tasks():
-    """Reads out the list of tasks."""
     if tasks:
         engine.say("Your tasks are:")
         for task in tasks:
@@ -25,7 +20,6 @@ def view_tasks():
     engine.runAndWait()
 
 def remove_task(task_number):
-    """Removes a task based on its position in the list."""
     if 0 < task_number <= len(tasks):
         removed_task = tasks.pop(task_number - 1)
         engine.say(f"Task {removed_task} removed")
@@ -34,13 +28,17 @@ def remove_task(task_number):
     engine.runAndWait()
 
 def recognize_speech():
-    """Listens for voice input and converts it to text."""
     with sr.Microphone() as source:
         print("Listening...")
+        recognizer.adjust_for_ambient_noise(source)
         try:
-            audio = recognizer.listen(source)
+            audio = recognizer.listen(source, timeout=5, phrase_time_limit=5)
             command = recognizer.recognize_google(audio)
-            return command.lower()  # Convert to lowercase for consistency
+            return command.lower()
+        except sr.WaitTimeoutError:
+            engine.say("Listening timed out, please try again")
+            engine.runAndWait()
+            return None
         except sr.UnknownValueError:
             engine.say("Sorry, I did not understand that")
             engine.runAndWait()
@@ -51,7 +49,6 @@ def recognize_speech():
             return None
 
 def main():
-    """Main function to interact with the user via voice commands."""
     while True:
         engine.say("Options: add task, view tasks, remove task, or exit")
         engine.runAndWait()
@@ -76,6 +73,9 @@ def main():
             task_number = recognize_speech()
             if task_number and task_number.isdigit():
                 remove_task(int(task_number))
+            else:
+                engine.say("Please say a valid task number")
+                engine.runAndWait()
 
         elif "exit" in command:
             engine.say("Exiting...")
