@@ -1,12 +1,10 @@
-tasks = []  # List to store tasks
+tasks = []
 
 def add_task(task):
-    """Adds a task to the list."""
     tasks.append(task)
     print(f"Task '{task}' added.")
 
 def view_tasks():
-    """Displays all tasks in the list."""
     if tasks:
         print("Your tasks:")
         for idx, task in enumerate(tasks, 1):
@@ -15,7 +13,6 @@ def view_tasks():
         print("No tasks to show.")
 
 def remove_task(task_number):
-    """Removes a task by its number."""
     if 0 < task_number <= len(tasks):
         removed_task = tasks.pop(task_number - 1)
         print(f"Task '{removed_task}' removed.")
@@ -23,7 +20,6 @@ def remove_task(task_number):
         print("Invalid task number.")
 
 def main():
-    """Main function to interact with the user."""
     while True:
         print("\nOptions: 1. Add Task  2. View Tasks  3. Remove Task  4. Exit")
         choice = input("Enter your choice: ")
@@ -45,6 +41,5 @@ def main():
         else:
             print("Invalid choice. Please try again.")
 
-# Runs the script when executed directly
 if __name__ == "__main__":
     main()
