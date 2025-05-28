@@ -1,0 +1,47 @@
+Ex. No.: 3a)
+
+Shell Script – Reverse of Digit
+Aim:
+To write a Shell script to reverse a given digit using looping statement.
+
+#!/bin/bash
+# reverse.sh - Reverse a given number
+
+echo "Enter a number:"
+read num
+
+rev=0
+while [ $num -gt 0 ]
+do
+    rem=$((num % 10))
+    rev=$((rev * 10 + rem))
+    num=$((num / 10))
+done
+
+echo "Reversed number: $rev"
+-----------------------------------------------------------
+Ex. No.: 3b)
+
+Shell Script – Fibbonacci Series
+Aim:
+To write a Shell script to generate a Fibonacci series using for loop.
+
+#!/bin/bash
+# fibonacci.sh - Generate Fibonacci series using for loop
+
+echo "Enter the number of terms:"
+read n
+
+a=0
+b=1
+
+echo "Fibonacci Series:"
+for (( i=0; i<n; i++ ))
+do
+    echo -n "$a "
+    fn=$((a + b))
+    a=$b
+    b=$fn
+done
+
+echo

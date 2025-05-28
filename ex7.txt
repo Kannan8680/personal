@@ -1,0 +1,91 @@
+Ex. No.: 7
+
+IPC USING SHARED MEMORY
+Aim:
+To write a C program to do Inter Process Communication (IPC) using shared memory
+between sender process and receiver process.
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <string.h>
+
+#define SHM_SIZE 1024  // Size of shared memory segment
+
+int main() {
+    key_t key = ftok("shmfile",65);  // Generate unique key
+    if (key == -1) {
+        perror("ftok");
+        exit(1);
+    }
+
+    // Create shared memory segment
+    int shmid = shmget(key, SHM_SIZE, 0666|IPC_CREAT);
+    if (shmid == -1) {
+        perror("shmget");
+        exit(1);
+    }
+
+    // Attach to shared memory
+    char *str = (char*) shmat(shmid, NULL, 0);
+    if (str == (char*) -1) {
+        perror("shmat");
+        exit(1);
+    }
+
+    printf("Enter message to send: ");
+    fgets(str, SHM_SIZE, stdin);
+
+    printf("Data written in shared memory: %s\n", str);
+
+    // Detach from shared memory
+    shmdt(str);
+
+    return 0;
+}
+--
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+
+#define SHM_SIZE 1024  // Size of shared memory segment
+
+int main() {
+    key_t key = ftok("shmfile",65);  // Generate unique key
+    if (key == -1) {
+        perror("ftok");
+        exit(1);
+    }
+
+    // Locate the shared memory segment
+    int shmid = shmget(key, SHM_SIZE, 0666);
+    if (shmid == -1) {
+        perror("shmget");
+        exit(1);
+    }
+
+    // Attach to shared memory
+    char *str = (char*) shmat(shmid, NULL, 0);
+    if (str == (char*) -1) {
+        perror("shmat");
+        exit(1);
+    }
+
+    printf("Data read from shared memory: %s\n", str);
+
+    // Detach from shared memory
+    shmdt(str);
+
+    // Optionally, destroy the shared memory segment (done by receiver)
+    shmctl(shmid, IPC_RMID, NULL);
+
+    return 0;
+}
+
+Instructions to Run:
+gcc sender.c -o sender
+gcc receiver.c -o receiver
+./sender
+./receiver

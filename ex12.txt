@@ -1,0 +1,49 @@
+Ex. No.: 12
+AIM:
+File Organization Technique- Single and Two level directory
+To implement File Organization Structures in C are
+a. Single Level Directory
+b. Two-Level Directory
+c. Hierarchical Directory Structure
+d. Directed Acyclic Graph Structure
+
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_FILES 100
+#define MAX_FILENAME 50
+
+typedef struct {
+    char filename[MAX_FILENAME];
+} File;
+
+typedef struct {
+    File files[MAX_FILES];
+    int file_count;
+} SingleLevelDirectory;
+
+void addFile(SingleLevelDirectory *dir, char *filename) {
+    if (dir->file_count < MAX_FILES) {
+        strcpy(dir->files[dir->file_count].filename, filename);
+        dir->file_count++;
+        printf("File '%s' added.\n", filename);
+    } else {
+        printf("Directory Full!\n");
+    }
+}
+
+void listFiles(SingleLevelDirectory *dir) {
+    printf("Files in directory:\n");
+    for (int i = 0; i < dir->file_count; i++) {
+        printf("%s\n", dir->files[i].filename);
+    }
+}
+
+int main() {
+    SingleLevelDirectory dir = {.file_count = 0};
+    addFile(&dir, "file1.txt");
+    addFile(&dir, "file2.txt");
+    listFiles(&dir);
+    return 0;
+}
+

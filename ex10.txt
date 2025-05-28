@@ -1,0 +1,92 @@
+Ex. No.: 10a) note :python
+
+
+BEST FIT
+Aim:
+To implement Best Fit memory allocation technique using Python.
+
+def best_fit(block_sizes, process_sizes):
+    allocation = [-1] * len(process_sizes)  # Track allocation of each process
+
+    for i, process_size in enumerate(process_sizes):
+        best_idx = -1
+        for j, block_size in enumerate(block_sizes):
+            if block_size >= process_size:
+                if best_idx == -1 or block_sizes[best_idx] > block_size:
+                    best_idx = j
+        if best_idx != -1:
+            allocation[i] = best_idx
+            block_sizes[best_idx] -= process_size
+
+    # Display results
+    print("Process No.\tProcess Size\tBlock No.")
+    for i, process_size in enumerate(process_sizes):
+        if allocation[i] != -1:
+            print(f"{i+1}\t\t{process_size}\t\t{allocation[i]+1}")
+        else:
+            print(f"{i+1}\t\t{process_size}\t\tNot Allocated")
+
+# Example usage
+block_sizes = [100, 500, 200, 300, 600]
+process_sizes = [212, 417, 112, 426]
+
+best_fit(block_sizes, process_sizes)
+
+-----------------------------------------------------------
+Ex. No.: 10b)
+
+FIRST FIT
+Aim:
+To write a C program for implementation memory allocation methods for fixed partition
+using first fit.
+
+#include <stdio.h>
+
+#define MAX_PARTITIONS 10
+#define MAX_PROCESSES 10
+
+int main() {
+    int partitions[MAX_PARTITIONS], n_partitions;
+    int processes[MAX_PROCESSES], n_processes;
+    int allocation[MAX_PROCESSES];
+    
+    printf("Enter the number of partitions: ");
+    scanf("%d", &n_partitions);
+    printf("Enter the sizes of partitions:\n");
+    for (int i = 0; i < n_partitions; i++) {
+        scanf("%d", &partitions[i]);
+    }
+    
+    printf("Enter the number of processes: ");
+    scanf("%d", &n_processes);
+    printf("Enter the sizes of processes:\n");
+    for (int i = 0; i < n_processes; i++) {
+        scanf("%d", &processes[i]);
+        allocation[i] = -1; // Initialize allocation to -1 (not allocated)
+    }
+    
+    // First Fit Allocation
+    for (int i = 0; i < n_processes; i++) {
+        for (int j = 0; j < n_partitions; j++) {
+            if (partitions[j] >= processes[i]) {
+                allocation[i] = j;
+                partitions[j] -= processes[i]; // Reduce partition size after allocation
+                break;
+            }
+        }
+    }
+    
+    // Display results
+    printf("\nProcess No.\tProcess Size\tPartition No.\n");
+    for (int i = 0; i < n_processes; i++) {
+        printf("%d\t\t%d\t\t", i + 1, processes[i]);
+        if (allocation[i] != -1) {
+            printf("%d\n", allocation[i] + 1);
+        } else {
+            printf("Not Allocated\n");
+        }
+    }
+    
+    return 0;
+}
+

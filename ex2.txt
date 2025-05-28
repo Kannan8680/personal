@@ -1,0 +1,46 @@
+Ex. no: 2a)
+
+Shell Script
+Aim:
+To write a Shellscript to to display basic calculator.
+
+#!/bin/bash
+# arith.sh - Basic Calculator Script
+
+echo "Enter two numbers:"
+read a
+read b
+
+echo "add $((a + b))"
+echo "sub $((a - b))"
+echo "mul $((a * b))"
+
+if [ $b -ne 0 ]; then
+    echo "div $((a / b))"
+    echo "mod $((a % b))"
+else
+    echo "div Error: Division by zero"
+    echo "mod Error: Division by zero"
+fi
+-----------------------------------------------------------
+Ex. no: 2b)
+
+Shell Script
+Aim:
+To write a Shellscript to test given year is leap or not using conditional statement
+
+#!/bin/bash
+# leap.sh - Check Leap Year
+
+echo "Enter a year:"
+read year
+
+if [ $((year % 4)) -eq 0 ]; then
+    if [ $((year % 100)) -ne 0 ] || [ $((year % 400)) -eq 0 ]; then
+        echo "leap year"
+    else
+        echo "not a leap year"
+    fi
+else
+    echo "not a leap year"
+fi

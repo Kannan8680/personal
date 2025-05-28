@@ -1,0 +1,284 @@
+Ex. No.: 11a)
+
+FIFO PAGE REPLACEMENT
+Aim:
+To find out the number of page faults that occur using First-in First-out (FIFO) page
+replacement technique.
+Algorithm:
+1. Declare the size with respect to page length
+2. Check the need of replacement from the page to memory
+3. Check the need of replacement from old page to new page in memory 4.
+Form a queue to hold all pages
+5. Insert the page require memory into the queue
+6. Check for bad replacement and page fault
+7. Get the number of processes to be inserted
+8. Display the values
+
+#include <stdio.h>
+#define MAX 100
+
+int main() {
+    int frames, n, pages[MAX];
+    int frame_arr[MAX];
+    int i, j, k, flag, pointer = 0, page_faults = 0;
+
+    printf("Enter number of frames: ");
+    scanf("%d", &frames);
+
+    printf("Enter number of pages: ");
+    scanf("%d", &n);
+
+    printf("Enter the page reference string:\n");
+    for (i = 0; i < n; i++) {
+        scanf("%d", &pages[i]);
+    }
+
+    // Initialize frames to -1 (empty)
+    for (i = 0; i < frames; i++) {
+        frame_arr[i] = -1;
+    }
+
+    for (i = 0; i < n; i++) {
+        flag = 0;
+
+        // Check if page is already in frames
+        for (j = 0; j < frames; j++) {
+            if (frame_arr[j] == pages[i]) {
+                flag = 1; // Page hit
+                break;
+            }
+        }
+
+        // Page fault occurs if flag is 0
+        if (flag == 0) {
+            frame_arr[pointer] = pages[i]; // Replace oldest page
+            pointer = (pointer + 1) % frames; // Circular increment
+            page_faults++;
+        }
+
+        // Optional: Print frames status after each insertion
+        printf("Frames after inserting page %d: ", pages[i]);
+        for (k = 0; k < frames; k++) {
+            if (frame_arr[k] != -1)
+                printf("%d ", frame_arr[k]);
+            else
+                printf("- ");
+        }
+        printf("\n");
+    }
+
+    printf("\nTotal Page Faults: %d\n", page_faults);
+
+    return 0;
+}
+
+-----------------------------------------------------------
+Ex. No.: 11b)
+
+Aim:
+LRU
+To write a c program to implement LRU page replacement algorithm.
+Algorithm:
+1: Start the process
+2: Declare the size
+3: Get the number of pages to be inserted
+4: Get the value
+5: Declare counter and stack
+6: Select the least recently used page by counter value
+7: Stack them according the selection.
+8: Display the values
+9: Stop the process
+
+#include <stdio.h>
+#define MAX 100
+
+int main() {
+    int frames, n, pages[MAX];
+    int frame_arr[MAX], time[MAX]; // time[] to track usage time of frames
+    int i, j, k, pos, min_time, page_faults = 0;
+
+    printf("Enter number of frames: ");
+    scanf("%d", &frames);
+
+    printf("Enter number of pages: ");
+    scanf("%d", &n);
+
+    printf("Enter the page reference string:\n");
+    for (i = 0; i < n; i++) {
+        scanf("%d", &pages[i]);
+    }
+
+    // Initialize frames and usage times
+    for (i = 0; i < frames; i++) {
+        frame_arr[i] = -1;
+        time[i] = 0;
+    }
+
+    int current_time = 0;
+
+    for (i = 0; i < n; i++) {
+        int page = pages[i];
+        int found = 0;
+
+        // Check if page is already in a frame (page hit)
+        for (j = 0; j < frames; j++) {
+            if (frame_arr[j] == page) {
+                found = 1;
+                time[j] = current_time++; // Update usage time
+                break;
+            }
+        }
+
+        if (!found) {
+            page_faults++;
+
+            // Find empty frame or least recently used frame to replace
+            int empty_frame = -1;
+            for (j = 0; j < frames; j++) {
+                if (frame_arr[j] == -1) {
+                    empty_frame = j;
+                    break;
+                }
+            }
+
+            if (empty_frame != -1) {
+                // Empty frame found, allocate page there
+                frame_arr[empty_frame] = page;
+                time[empty_frame] = current_time++;
+            } else {
+                // Find least recently used frame
+                min_time = time[0];
+                pos = 0;
+                for (j = 1; j < frames; j++) {
+                    if (time[j] < min_time) {
+                        min_time = time[j];
+                        pos = j;
+                    }
+                }
+                // Replace least recently used page
+                frame_arr[pos] = page;
+                time[pos] = current_time++;
+            }
+        }
+
+        // Print current frame status
+        printf("Frames after inserting page %d: ", page);
+        for (k = 0; k < frames; k++) {
+            if (frame_arr[k] != -1)
+                printf("%d ", frame_arr[k]);
+            else
+                printf("- ");
+        }
+        printf("\n");
+    }
+
+    printf("\nTotal Page Faults: %d\n", page_faults);
+
+    return 0;
+}
+
+-----------------------------------------------------------
+Ex. No.: 11c)
+Aim:
+To write a c program to implement Optimal page replacement algorithm.
+
+#include <stdio.h>
+#define MAX 100
+
+// Function to find the index of the page to replace
+int findOptimal(int pages[], int frame_arr[], int n, int current_index, int frames) {
+    int i, j;
+    int farthest = current_index;
+    int replace_index = -1;
+
+    for (i = 0; i < frames; i++) {
+        int j;
+        // Search when this page will be used next
+        for (j = current_index + 1; j < n; j++) {
+            if (frame_arr[i] == pages[j]) {
+                if (j > farthest) {
+                    farthest = j;
+                    replace_index = i;
+                }
+                break;
+            }
+        }
+        // If the page is never used again, choose it immediately
+        if (j == n) {
+            return i;
+        }
+    }
+    // If all pages are used again, replace the one used farthest in future
+    if (replace_index == -1)
+        return 0;
+    else
+        return replace_index;
+}
+
+int main() {
+    int frames, n, pages[MAX];
+    int frame_arr[MAX];
+    int i, j, page_faults = 0;
+
+    printf("Enter number of frames: ");
+    scanf("%d", &frames);
+
+    printf("Enter number of pages: ");
+    scanf("%d", &n);
+
+    printf("Enter the page reference string:\n");
+    for (i = 0; i < n; i++) {
+        scanf("%d", &pages[i]);
+    }
+
+    // Initialize frames
+    for (i = 0; i < frames; i++) {
+        frame_arr[i] = -1;
+    }
+
+    for (i = 0; i < n; i++) {
+        int found = 0;
+        // Check if page is already in frames (page hit)
+        for (j = 0; j < frames; j++) {
+            if (frame_arr[j] == pages[i]) {
+                found = 1;
+                break;
+            }
+        }
+
+        if (!found) {
+            page_faults++;
+
+            // If there is empty frame, fill it first
+            int placed = 0;
+            for (j = 0; j < frames; j++) {
+                if (frame_arr[j] == -1) {
+                    frame_arr[j] = pages[i];
+                    placed = 1;
+                    break;
+                }
+            }
+
+            // If no empty frame, find optimal page to replace
+            if (!placed) {
+                int replace_index = findOptimal(pages, frame_arr, n, i, frames);
+                frame_arr[replace_index] = pages[i];
+            }
+        }
+
+        // Print frame status
+        printf("Frames after inserting page %d: ", pages[i]);
+        for (j = 0; j < frames; j++) {
+            if (frame_arr[j] != -1)
+                printf("%d ", frame_arr[j]);
+            else
+                printf("- ");
+        }
+        printf("\n");
+    }
+
+    printf("\nTotal Page Faults: %d\n", page_faults);
+
+    return 0;
+}
+
